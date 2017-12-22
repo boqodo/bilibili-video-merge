@@ -1,0 +1,11 @@
+{
+  "name": "bilibili-video-merge",
+  "version": "1.0.0",
+  "description": "b站下载器视频合并",
+  "main": "index.js",
+  "author": "boqodo",
+  "license": "MIT",
+  "dependencies": {
+    
+  }
+}
