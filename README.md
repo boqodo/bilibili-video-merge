@@ -4,6 +4,24 @@
 
 ## nodejs知识点
 
+### Promise  async/await
+
+> 包装回调方式的方法，将err传给reject，成功返回传给resolve即可；
+> 包装成Promise后即可正常使用async/await的方式编写代码；
+> 使用async/await的方式注意需要用trycatch处理异常的情况（reject）
+> 不处理reject，会直接提示警告程序退出
+
+```js
+function readdir(path) {
+    return new Promise((resolve, reject) => {
+        fs.readdir(path, (err, files) => {
+            if (err) reject(err)
+            resolve(files)
+        })
+    })
+}
+```
+
 ### Readable
 
 fs.createReadStream 默认读取64kb的数据，65536个字节(可以通过`highWaterMark`设置读取字节数)，调试可以查看 bytesRead；
@@ -14,6 +32,8 @@ Readable的`readable`事件，在读取设置的字节数后触发，触发次�
 Readable._readableState.length  获取当次当前buffer中的长度，每次调用 read(xx)后，会相应减少xx
 
 read(xx), 其中xx 大于 `Readable._readableState.length`,则返回null，无法读取到数据；需要考虑拼接下一次触发的readable事件中再次读取；
+
+通过stream.Transform 来转换流 [源码](https://github.com/nodejs/node/blob/master/lib/_stream_transform.js)
 
 ### Buffer
 
@@ -65,6 +85,5 @@ read(xx), 其中xx 大于 `Readable._readableState.length`,则返回null，无�
 - [FLV文件结构解析](http://blog.csdn.net/huibailingyu/article/details/42878381)
 - [FLV文件格式解析][flv1]
 - [也说FLV格式分析（C语言从0开始，详解，完整版](http://blog.csdn.net/spygg/article/details/53896179)
-
 
 [flv1]: https://wuyuans.com/2012/08/flv-format/  "FLV文件格式解析"
