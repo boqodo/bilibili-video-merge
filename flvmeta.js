@@ -173,9 +173,9 @@ function parse(flvfile) {
 
 /**
  * 解析Flv头信息
- * 
+ *
  * @param {Buffer} buffer
- * @returns 包含头信息的对象
+ * @returns {Object} 包含头信息的对象
  */
 function parseFlvHeader(buffer) {
     const header = {}
@@ -194,9 +194,9 @@ function parseFlvHeader(buffer) {
 }
 /**
  * 解析flv Tag头信息
- * 
- * @param {Buffer} buffer 
- * @returns 返回tag的类型和tag对应的数据内容所占字节数
+ *
+ * @param {Buffer} buffer
+ * @returns {Object} 返回tag的类型和tag对应的数据内容所占字节数
  */
 function parseFlvTagHeader(buffer) {
     let type = buffer[0] & 0x1f   //tag头类型 
@@ -212,9 +212,9 @@ function parseFlvTagHeader(buffer) {
 }
 /**
  * 解析Flv Tag的数据内容
- * 
+ *
  * @param {number} type  Tag头的类型
- * @param {Buffer} buffer 
+ * @param {Buffer} buffer
  * @returns {object} 解析的内容对象
  */
 function parseFlvTagBody(type, buffer) {
@@ -224,9 +224,9 @@ function parseFlvTagBody(type, buffer) {
 }
 /**
  * 解析tag类型为脚本数据的Tag
- * 
- * @param {Buffer} tagbody 
- * @returns 解析的内容对象
+ *
+ * @param {Buffer} tagbody
+ * @returns {Object} 解析的内容对象
  */
 function parseScriptTag(tagbody) {
     let type = tagbody[0]
@@ -246,9 +246,9 @@ function parseScriptTag(tagbody) {
 
 /**
  * 解析音频tag
- * 
- * @param {buffer} tagbody 
- * @returns 
+ *
+ * @param {buffer} tagbody
+ * @returns {Object}
  */
 function parseSoundTag(tagbody) {
     let soundHeader = tagbody[0]
@@ -265,9 +265,9 @@ function parseSoundTag(tagbody) {
 }
 /**
  * 解析视频Tag
- * 
- * @param {buffer} tagbody 
- * @returns 
+ *
+ * @param {buffer} tagbody
+ * @returns {Object}
  */
 function parseVideoTag(tagbody) {
     let videoHeader = tagbody[0]
@@ -283,10 +283,10 @@ function parseVideoTag(tagbody) {
 
 /**
  * 数据类型为数组的处理器
- * 
+ *
  * @param {number} total    数据内容长度所占字节数
- * @param {Buffer} tagbody 
- * @returns 
+ * @param {Buffer} tagbody
+ * @returns {Object}
  */
 function arrayHandler(total, tagbody) {
     let end = total
@@ -311,10 +311,10 @@ function arrayHandler(total, tagbody) {
 }
 /**
  * 数据类型为Object的处理器
- * 
+ *
  * @param {number} total    数据内容长度所占字节数
- * @param {Buffer} tagbody 
- * @returns 
+ * @param {Buffer} tagbody
+ * @returns {Object}
  */
 function objHandler(total, tagbody) {
     let end = total
@@ -355,10 +355,10 @@ function objHandler(total, tagbody) {
 }
 /**
  * 数字类型处理器
- * 
+ *
  * @param {number} total   数据内容长度所占字节数
- * @param {Buffer} tagbody 
- * @returns 
+ * @param {Buffer} tagbody
+ * @returns {Object}
  */
 function numberHandler(total, tagbody) {
     let end = total
@@ -370,10 +370,10 @@ function numberHandler(total, tagbody) {
 }
 /**
  * 布尔类型处理器
- * 
+ *
  * @param {number} total 数据内容长度所占字节数
- * @param {Buffer} tagbody 
- * @returns 
+ * @param {Buffer} tagbody
+ * @returns {Object}
  */
 function boolHandler(total, tagbody) {
     let end = total
@@ -385,10 +385,10 @@ function boolHandler(total, tagbody) {
 }
 /**
  * 字符串类型处理器
- * 
+ *
  * @param {number} total    数据内容长度所占字节数
- * @param {Buffer} tagbody  
- * @returns 
+ * @param {Buffer} tagbody
+ * @returns {Object}
  */
 function stringHandler(total, tagbody) {
     let end = total
@@ -400,10 +400,10 @@ function stringHandler(total, tagbody) {
 }
 /**
  * ECMA类型（类型Map）的处理器
- * 
+ *
  * @param {number} total    数据内容长度所占字节数
- * @param {Buffer} body 
- * @returns 
+ * @param {Buffer} body
+ * @returns {Object}
  */
 function ecmaHandler(total, body) {
     let end = total
@@ -434,8 +434,8 @@ function ecmaHandler(total, body) {
 }
 /**
  * 计算长度
- * 
- * @param {Buffer} bytearr 
+ *
+ * @param {Buffer} bytearr
  * @returns {number}
  */
 function len(bytearr) {
