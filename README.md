@@ -1,6 +1,12 @@
 # 项目功能
 
-> 基于 bilibili win10客户端下载的视频，有部分是分散在多个文件中的，需要合并成一个整体的视频文件的考虑，用nodejs尝试进行合并操作；
+> 基于 bilibili win10客户端下载的Flv视频，有部分是分散在多个文件中的，需要合并成一个整体的视频文件的考虑，用nodejs尝试进行合并操作；
+
+## 文件说明
+
+- flvmeta.js        flv文件元信息提取
+- flvmeta.test.js   flvmeta测试文件
+- ...
 
 ## 功能列表
 
@@ -59,6 +65,8 @@ readable.close() 可以跳出data事件，直接进入close事件，结束读取
 | buffer.readXx..     | 多个读取各类型的值的方法      |
 | buffer.writeXx...   | 多个写入各类型的值的方法      |
 
+---
+
 ## Flv 格式解析知识点
 
 > 格式的解析过程主要[参考][flv1]，其中有些没有明确的内容进行记录
@@ -94,6 +102,14 @@ readable.close() 可以跳出data事件，直接进入close事件，结束读取
 | 12 = Long string type  | 4字节     |类似string type，只是长度不同    |
 
 ## 参考
+
+### 已有项目
+
+1.[flvmeta](https://github.com/noirotm/flvmeta/) c/c++版本的flv元信息编辑
+
+2.[node-flvmeta](https://github.com/patriksimek/node-flvmeta/) 基于flvmeta封装的node版本
+
+### 相关资料
 
 - [FLV文件结构解析](http://blog.csdn.net/huibailingyu/article/details/42878381)
 - [FLV文件格式解析][flv1]
