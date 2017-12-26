@@ -1,6 +1,12 @@
 # 项目功能
 
->基于 bilibili win10客户端下载的视频，有部分是分散在多个文件中的，需要合并成一个整体的视频文件的考虑，用nodejs尝试进行合并操作；
+> 基于 bilibili win10客户端下载的视频，有部分是分散在多个文件中的，需要合并成一个整体的视频文件的考虑，用nodejs尝试进行合并操作；
+
+## 功能列表
+
+- [x] 提取flv的元信息
+- [ ] 合并多个flv流信息
+- [ ] 重写元信息（关键帧和时间长度等）
 
 ## nodejs知识点
 
@@ -26,12 +32,19 @@ function readdir(path) {
 
 fs.createReadStream 默认读取64kb的数据，65536个字节(可以通过`highWaterMark`设置读取字节数)，调试可以查看 bytesRead；
 
-Readable的`readable`事件，在读取设置的字节数后触发，触发次数为 `Math.ceil(文件的总字节数 / highWaterMark) + 1`, 最后的1次为文件读取完结的触发时间，字节数为0；
+#### readable 事件
 
+Readable的`readable`事件，在读取设置的字节数后触发，触发次数为 `Math.ceil(文件的总字节数 / highWaterMark) + 1`, 最后的1次为文件读取完结的触发时间，字节数为0；
 
 Readable._readableState.length  获取当次当前buffer中的长度，每次调用 read(xx)后，会相应减少xx
 
 read(xx), 其中xx 大于 `Readable._readableState.length`,则返回null，无法读取到数据；需要考虑拼接下一次触发的readable事件中再次读取；
+
+#### data 事件
+
+readable.close() 可以跳出data事件，直接进入close事件，结束读取流的操作
+
+#### 流转换
 
 通过stream.Transform 来转换流 [源码](https://github.com/nodejs/node/blob/master/lib/_stream_transform.js)
 

@@ -57,9 +57,7 @@ function parse(flvfile) {
         let readStream = fs.createReadStream(flvfile, { highWaterMark: highWaterMark })
 
         let dataTriggerTimes = 0  //记录data触发的次数
-        const flv = {
-            filesize: 0
-        }
+        const flv = {}
 
         let remainBuffer
         let remainBytes
@@ -68,7 +66,6 @@ function parse(flvfile) {
 
         readStream.on('data', (chunk) => {
             try {
-                flv.filesize += chunk.length
                 dataTriggerTimes++
                 const read = readBytes()
 
@@ -98,7 +95,11 @@ function parse(flvfile) {
                     } else if (remainType === 1) { //读取tag body 不够时处理
                         flvTagBodyBuffer = Buffer.concat([remainBuffer, moreBuffer])
                         let flvTagBody = parseFlvTagBody(remainFlvTagHeader.type, flvTagBodyBuffer)
-                        //console.log(flvTagBody)
+
+                        if (flvTagHeader.type === 18) {
+                            flv.meta = flvTagBody
+                            readStream.close()
+                        }
                     } else {
                         throw Error('不支持的剩余缓冲区类型')
                     }
@@ -126,9 +127,9 @@ function parse(flvfile) {
                         return
                     }
                     let flvTagBody = parseFlvTagBody(flvTagHeader.type, flvTagBodyBuffer)
-                    if(flvTagHeader.type === 18){
-                        resolve(flvTagBody)
-                        return
+                    if (flvTagHeader.type === 18) {
+                        Object.assign(flv, flvTagBody)
+                        readStream.close()
                     }
 
                     flvTagHeaderBuffer = read(flvTagHeaderBytes)
@@ -228,18 +229,18 @@ function parseFlvTagBody(type, buffer) {
  * @returns 解析的内容对象
  */
 function parseScriptTag(tagbody) {
-    if (tagbody.length !== 0) {
-        let type = tagbody[0]
-        let dataType = dataTypes[type]
-        let len = dataType.len
-        let handlerFun = dataType.handler
-        let resobj = handlerFun(len, tagbody.slice(1))
-        let body = resobj.body
-        if (body.length !== 0) {
-            return parseScriptTag(body)
-        } else {
-            return resobj.value
-        }
+    let type = tagbody[0]
+    let dataType = dataTypes[type]
+    let len = dataType.len
+    let handlerFun = dataType.handler
+    let resobj = handlerFun(len, tagbody.slice(1))
+    let body = resobj.body
+    if (body.length !== 0) {
+        let value = {}
+        value[resobj.value] = parseScriptTag(body)
+        return value
+    } else {
+        return resobj.value
     }
 }
 
