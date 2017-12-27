@@ -449,6 +449,4 @@ function len(bytearr) {
 }
 
 
-module.exports = (flvfile) => {
-    return parse(flvfile)
-}
+module.exports = parse

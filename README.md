@@ -109,6 +109,10 @@ readable.close() 可以跳出data事件，直接进入close事件，结束读取
 
 2.[node-flvmeta](https://github.com/patriksimek/node-flvmeta/) 基于flvmeta封装的node版本
 
+3.[BiliBiliMerge](https://gitee.com/chengww5217/BiliBiliMerge)  java版本
+
+4.[C# 版 flvmerge：快速合并多个flv文件](https://www.cnblogs.com/xiaotie/p/3441030.html)
+
 ### 相关资料
 
 - [FLV文件结构解析](http://blog.csdn.net/huibailingyu/article/details/42878381)
