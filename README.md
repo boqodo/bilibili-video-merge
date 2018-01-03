@@ -5,65 +5,15 @@
 ## 文件说明
 
 - flvmeta.js        flv文件元信息提取
-- flvmeta.test.js   flvmeta测试文件
-- ...
+- flvmeta.test.js   flv元信息测试文件
+- flvmerge.js       flv文件合并
+- flvmerge.test.js  flv合并测试文件
 
 ## 功能列表
 
 - [x] 提取flv的元信息
 - [ ] 合并多个flv流信息
 - [ ] 重写元信息（关键帧和时间长度等）
-
-## nodejs知识点
-
-### Promise  async/await
-
-> 包装回调方式的方法，将err传给reject，成功返回传给resolve即可；
-> 包装成Promise后即可正常使用async/await的方式编写代码；
-> 使用async/await的方式注意需要用trycatch处理异常的情况（reject）
-> 不处理reject，会直接提示警告程序退出
-
-```js
-function readdir(path) {
-    return new Promise((resolve, reject) => {
-        fs.readdir(path, (err, files) => {
-            if (err) reject(err)
-            resolve(files)
-        })
-    })
-}
-```
-
-### Readable
-
-fs.createReadStream 默认读取64kb的数据，65536个字节(可以通过`highWaterMark`设置读取字节数)，调试可以查看 bytesRead；
-
-#### readable 事件
-
-Readable的`readable`事件，在读取设置的字节数后触发，触发次数为 `Math.ceil(文件的总字节数 / highWaterMark) + 1`, 最后的1次为文件读取完结的触发时间，字节数为0；
-
-Readable._readableState.length  获取当次当前buffer中的长度，每次调用 read(xx)后，会相应减少xx
-
-read(xx), 其中xx 大于 `Readable._readableState.length`,则返回null，无法读取到数据；需要考虑拼接下一次触发的readable事件中再次读取；
-
-#### data 事件
-
-readable.close() 可以跳出data事件，直接进入close事件，结束读取流的操作
-
-#### 流转换
-
-通过stream.Transform 来转换流 [源码](https://github.com/nodejs/node/blob/master/lib/_stream_transform.js)
-
-### Buffer
-
-| method              | desc              |
-|---------------------|-------------------|
-| new Buffer(8)       | 构建8个字节的都为0的buffer |
-| Buffer.concat       | buffer的拼接         |
-| buffer.slice        | buffer截取          |
-| buffer.readDoubleBE | 读取double类型的值      |
-| buffer.readXx..     | 多个读取各类型的值的方法      |
-| buffer.writeXx...   | 多个写入各类型的值的方法      |
 
 ---
 
@@ -112,6 +62,8 @@ readable.close() 可以跳出data事件，直接进入close事件，结束读取
 3.[BiliBiliMerge](https://gitee.com/chengww5217/BiliBiliMerge)  java版本
 
 4.[C# 版 flvmerge：快速合并多个flv文件](https://www.cnblogs.com/xiaotie/p/3441030.html)
+
+5.[node-flv](https://github.com/TooTallNate/node-flv) 
 
 ### 相关资料
 

@@ -1,6 +1,6 @@
 const path = require('path')
 const flvmerge = require('./flvmerge.js')
-const downloaddir = '文件目录'
+const downloaddir = 'C:\\Users\\boqodo\\AppData\\Local\\Packages\\36699Atelier39.forWin10_pke1vz55rvc1r\\LocalCache\\BilibiliDownload'
 
 let flvfile1 = path.join(downloaddir, "4892142\\1", "4892142_1_0.flv")
 let flvfile2 = path.join(downloaddir, "4892142\\1", "4892142_1_1.flv");
