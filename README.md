@@ -4,6 +4,7 @@
 
 ## 文件说明
 
+- bilibilimerge.js  bilibili客户端下载到本地的flv文件合并，依赖[ffmpeg][ffmpeg]处理合并
 - flvmeta.js        flv文件元信息提取
 - flvmeta.test.js   flv元信息测试文件
 - flvmerge.js       flv文件合并
@@ -21,16 +22,16 @@
 
 > 格式的解析过程主要[参考][flv1]，其中有些没有明确的内容进行记录
 
-## 第一部分 Header
+### 第一部分 Header
 
 > 9个字节，固定长度
 
-## 第二部分 Body
+### 第二部分 Body
 
 > 由 `4个字节(表示上一个tag整体长度) + Tag` 循环叠加而成 
 > Header后的第一个4个字节为 00 00 00 00，因为它之前并没有Tag
 
-### 脚本Tag (Tag类型=18)
+#### 脚本Tag (Tag类型=18)
 
 > 脚本Tag一般只有一个，是flv的第一个Tag，用于存放flv的信息
 
@@ -63,7 +64,7 @@
 
 4.[C# 版 flvmerge：快速合并多个flv文件](https://www.cnblogs.com/xiaotie/p/3441030.html)
 
-5.[node-flv](https://github.com/TooTallNate/node-flv) 
+5.[node-flv](https://github.com/TooTallNate/node-flv)
 
 ### 相关资料
 
@@ -72,3 +73,4 @@
 - [也说FLV格式分析（C语言从0开始，详解，完整版](http://blog.csdn.net/spygg/article/details/53896179)
 
 [flv1]: https://wuyuans.com/2012/08/flv-format/  "FLV文件格式解析"
+[ffmpeg]: http://ffmpeg.org/    "ffmpeg官方网站"
