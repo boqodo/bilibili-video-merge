@@ -6,8 +6,9 @@ const { spawn } = require('child_process')
 // bilibili客户端下载文件所在目录 如：C:\\Users\\xxx\\AppData\\Local\\Packages\\LocalCache\\BilibiliDownload
 const downloaddir ='BilibiliDownload'
 // 合并文件后输出的目录 如: D:\\bilibili
-const outvideodir = '保存文件目录'  
-let [first, last] = [30,]
+const outvideodir = '保存文件目录'
+// 合并第几集到第几集
+let [first, last] = [0,99]
 first = first || 0
 last = last || Number.MAX_SAFE_INTEGER
 async function start(dir) {
