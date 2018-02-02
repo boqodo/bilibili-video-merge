@@ -5,6 +5,7 @@
 ## 文件说明
 
 - bilibilimerge.js  bilibili客户端下载到本地的flv文件合并，依赖[ffmpeg][ffmpeg]处理合并
+- bilibilidownloader.js 基于puppeteer的抓取bilibili页面请求信息，下载文件并做合并（依赖[ffmpeg][ffmpeg]）处理
 - flvmeta.js        flv文件元信息提取
 - flvmeta.test.js   flv元信息测试文件
 - flvmerge.js       flv文件合并
@@ -15,6 +16,10 @@
 - [x] 提取flv的元信息
 - [ ] 合并多个flv流信息
 - [ ] 重写元信息（关键帧和时间长度等）
+
+## puppeteer
+
+1. `yarn add puppeteer --ignore-scripts`  不安装Chromium，使用chrome处理
 
 ---
 

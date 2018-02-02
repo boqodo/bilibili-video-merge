@@ -1,6 +1,5 @@
-test/demo.js
-test/flv.js
-test/index.js
-test
+test/*
 .idea
 .vscode
+node_modules
+ep*.json

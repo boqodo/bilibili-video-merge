@@ -4,11 +4,11 @@ const stream = require('stream')
 const { spawn } = require('child_process')
 
 // bilibili客户端下载文件所在目录 如：C:\\Users\\xxx\\AppData\\Local\\Packages\\LocalCache\\BilibiliDownload
-const downloaddir ='BilibiliDownload'
+const downloaddir = 'BilibiliDownload'
 // 合并文件后输出的目录 如: D:\\bilibili
 const outvideodir = '保存文件目录'
 // 合并第几集到第几集
-let [first, last] = [0,99]
+let [first, last] = [0, 99]
 first = first || 0
 last = last || Number.MAX_SAFE_INTEGER
 async function start(dir) {
@@ -39,7 +39,9 @@ async function start(dir) {
 					})
 
 					let savefilepath = path.join(outvideodir, videoname + '.flv')
-					let res = await merge(flvs, savefilepath)
+					let mergelisttxt = path.join(outvideodir, videoname + 'mergelist.txt')
+					let res = await merge(flvs, savefilepath, mergelisttxt)
+					fs.unlinkSync(mergelisttxt)
 					console.log(`${savefilepath}合并${res ? '' : '不'}成功!`)
 				}
 			})
@@ -65,14 +67,23 @@ function readdir(path) {
 	})
 }
 
-function merge(filepaths, savefilepath) {
+function merge(filepaths, savefilepath, mergelisttxt) {
+	let files = ''
+	filepaths.forEach(f => {
+		files += `file '${f}'\r\n`
+	})
+	fs.writeFileSync(mergelisttxt, files)
 	return new Promise((resolve, reject) => {
 		let ls = spawn('ffmpeg', [
+			'-f',
+			'concat',
+			'-safe',
+			'-1',
 			'-i',
-			`concat:${filepaths.join('|')}`,
-			'-y',
+			mergelisttxt,
 			'-c',
 			'copy',
+			'-y',
 			savefilepath
 		])
 		ls.stdout.on('data', data => {
@@ -80,7 +91,7 @@ function merge(filepaths, savefilepath) {
 		})
 
 		ls.stderr.on('data', data => {
-			//console.log(`stderr: ${data}`);
+			//console.log(`stderr: ${data}`)
 		})
 
 		ls.on('close', code => {
@@ -88,7 +99,6 @@ function merge(filepaths, savefilepath) {
 		})
 	})
 }
-
 try {
 	start(downloaddir)
 } catch (err) {

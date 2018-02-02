@@ -6,6 +6,9 @@
   "author": "boqodo",
   "license": "MIT",
   "dependencies": {
-    
+    "cheerio": "^1.0.0-rc.2",
+    "lodash": "^4.17.4",
+    "puppeteer": "^1.0.0",
+    "r2": "^2.0.0"
   }
 }
