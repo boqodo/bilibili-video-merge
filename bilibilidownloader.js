@@ -12,7 +12,7 @@ const executablePath =
 	'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
 
 // 要下载的动画地址
-const videourl = 'https://www.bilibili.com/bangumi/play/ep89267'
+const videourl = 'https://www.bilibili.com/bangumi/play/ep114966'
 // 下载动画存放目录
 const savedir = 'D:\\bilibilisavedir'
 // 第几季，从0开始
@@ -135,7 +135,7 @@ async function openbrowserhandler(downloadvideourls) {
 			}
 			await Promise.all(mergepromises)
 			console.log('合并完成！')
-			mergelistfiles.forEach(m=>fs.unlinkSync(m))
+			mergelistfiles.forEach(m => fs.unlinkSync(m))
 			console.log('清理合并文件完成！')
 		}
 	})
