@@ -43,6 +43,7 @@ async function start(dir) {
 					let res = await merge(flvs, savefilepath, mergelisttxt)
 					fs.unlinkSync(mergelisttxt)
 					console.log(`${savefilepath}合并${res ? '' : '不'}成功!`)
+					await metaDataHandler(savefilepath)
 				}
 			})
 		}
@@ -95,10 +96,38 @@ function merge(filepaths, savefilepath, mergelisttxt) {
 		})
 
 		ls.on('close', code => {
-			resolve(code === 0)
+			code === 0 ? resolve(true) : reject(code)
 		})
 	})
 }
+
+function metaDataHandler(savefilepath) {
+	let finalsavefilepath = path.join(
+		path.dirname(savefilepath),
+		path.basename(savefilepath, '.flv') + '_m.flv'
+	)
+	return new Promise((resolve, reject) => {
+		let ls = spawn('yamdi', ['-i', savefilepath, '-o', finalsavefilepath])
+		ls.stdout.on('data', data => {
+			console.log(`yamdi stdout: ${data}`)
+		})
+
+		ls.stderr.on('data', data => {
+			console.log(`yamdi stderr: ${data}`)
+		})
+
+		ls.on('close', code => {
+			if(code === 0){
+				fs.unlinkSync(savefilepath)
+				fs.renameSync(finalsavefilepath,savefilepath)
+				resolve(true)
+			}else{
+				reject(code)
+			}
+		})
+	})
+}
+
 try {
 	start(downloaddir)
 } catch (err) {

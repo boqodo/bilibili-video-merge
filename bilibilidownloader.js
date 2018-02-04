@@ -126,17 +126,21 @@ async function openbrowserhandler(downloadvideourls) {
 			let map = _.groupBy(ress, file => path.basename(file).split('-')[0])
 			let mergepromises = []
 			let mergelistfiles = []
+			let savefilepaths = []
 			for (let k in map) {
 				let v = map[k]
 				let savefilepath = path.join(savedir, k + '.flv')
 				let mergelisttxt = path.join(savedir, k + 'mergelist.txt')
 				mergelistfiles.push(mergelisttxt)
+				savefilepaths.push(savefilepath)
 				mergepromises.push(merge(v, savefilepath, mergelisttxt))
 			}
 			await Promise.all(mergepromises)
 			console.log('合并完成！')
 			mergelistfiles.forEach(m => fs.unlinkSync(m))
 			console.log('清理合并文件完成！')
+			await Promise.all(savefilepaths.map(metaDataHandler))
+			console.log('视频信息处理完成！')
 		}
 	})
 	downloadvideourls.forEach(async video => {
@@ -251,11 +255,36 @@ function merge(filepaths, savefilepath, mergelisttxt) {
 		})
 
 		ls.on('close', code => {
-			resolve(code === 0)
+			code === 0 ? resolve(true) : reject(code)
 		})
 	})
 }
+function metaDataHandler(savefilepath) {
+	let finalsavefilepath = path.join(
+		path.dirname(savefilepath),
+		path.basename(savefilepath, '.flv') + '_m.flv'
+	)
+	return new Promise((resolve, reject) => {
+		let ls = spawn('yamdi', ['-i', savefilepath, '-o', finalsavefilepath])
+		ls.stdout.on('data', data => {
+			console.log(`yamdi stdout: ${data}`)
+		})
 
+		ls.stderr.on('data', data => {
+			console.log(`yamdi stderr: ${data}`)
+		})
+
+		ls.on('close', code => {
+			if(code === 0){
+				fs.unlinkSync(savefilepath)
+				fs.renameSync(finalsavefilepath,savefilepath)
+				resolve(true)
+			}else{
+				reject(code)
+			}
+		})
+	})
+}
 ;(async () => {
 	let store = await getSeasonUrls(videourl)
 	let ss = Object.keys(store)
