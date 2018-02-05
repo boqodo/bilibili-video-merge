@@ -4,8 +4,9 @@
 
 ## 文件说明
 
-- bilibilimerge.js  bilibili客户端下载到本地的flv文件合并，依赖[ffmpeg][ffmpeg]处理合并
-- bilibilidownloader.js 基于puppeteer的抓取bilibili页面请求信息，下载文件并做合并（依赖[ffmpeg][ffmpeg]）处理
+- bilibilimerge.js  bilibili客户端下载到本地的flv文件合并，依赖[ffmpeg][ffmpeg]处理合并，[yamdi][yamdi]处理元信息
+- bilibilidownloader.js 基于puppeteer的抓取bilibili页面请求信息，下载文件并做合并（依赖[ffmpeg][ffmpeg]）处理，[yamdi][yamdi]处理元信息
+- progressmanager.js    下载进度显示处理
 - flvmeta.js        flv文件元信息提取
 - flvmeta.test.js   flv元信息测试文件
 - flvmerge.js       flv文件合并
@@ -79,3 +80,4 @@
 
 [flv1]: https://wuyuans.com/2012/08/flv-format/  "FLV文件格式解析"
 [ffmpeg]: http://ffmpeg.org/    "ffmpeg官方网站"
+[yamdi]: http://yamdi.sourceforge.net/ "yamdi官方网站"

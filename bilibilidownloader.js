@@ -6,6 +6,7 @@ const { URL } = require('url')
 const path = require('path')
 const cheerio = require('cheerio')
 const EventEmitter = require('events')
+const ProgressManager = require('./progressmanager')
 const _ = require('lodash')
 // chrome安装目录
 const executablePath =
@@ -201,11 +202,20 @@ async function download(video) {
 				Referer: referer
 			}
 			let res = await r2(downloadurl.href, { headers }).response
+
+			let bar = ProgressManager.createProgress({
+				total:video.filesize,
+				head:savefile
+			})
 			let write = fs.createWriteStream(savefile)
 			res.body.on('error', data => {
 				reject(data)
 			})
+			res.body.on('data', function(chunk) {
+				ProgressManager.tick(bar,chunk.length)
+			})
 			res.body.on('end', () => {
+				ProgressManager.finish(bar)
 				resolve(savefile)
 			})
 			res.body.pipe(write)
@@ -247,11 +257,11 @@ function merge(filepaths, savefilepath, mergelisttxt) {
 			savefilepath
 		])
 		ls.stdout.on('data', data => {
-			console.log(`stdout: ${data}`)
+			//console.log(`stdout: ${data}`)
 		})
 
 		ls.stderr.on('data', data => {
-			console.log(`stderr: ${data}`)
+			//console.log(`stderr: ${data}`)
 		})
 
 		ls.on('close', code => {
@@ -267,11 +277,11 @@ function metaDataHandler(savefilepath) {
 	return new Promise((resolve, reject) => {
 		let ls = spawn('yamdi', ['-i', savefilepath, '-o', finalsavefilepath])
 		ls.stdout.on('data', data => {
-			console.log(`yamdi stdout: ${data}`)
+			//console.log(`yamdi stdout: ${data}`)
 		})
 
 		ls.stderr.on('data', data => {
-			console.log(`yamdi stderr: ${data}`)
+			//console.log(`yamdi stderr: ${data}`)
 		})
 
 		ls.on('close', code => {

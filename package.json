@@ -8,7 +8,9 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "lodash": "^4.17.4",
+    "progress": "^2.0.0",
     "puppeteer": "^1.0.0",
-    "r2": "^2.0.0"
+    "r2": "^2.0.0",
+    "string-width": "^2.1.1"
   }
 }
