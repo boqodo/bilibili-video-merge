@@ -13,13 +13,13 @@ const executablePath =
 	'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
 
 // 要下载的动画地址
-const videourl = 'https://www.bilibili.com/bangumi/play/ep114966'
+const videourl = 'https://www.bilibili.com/bangumi/play/ep89267'
 // 下载动画存放目录
-const savedir = 'D:\\bilibilisavedir'
+const savedir = 'D:\\ztest-demo'
 // 第几季，从0开始
 let seasonnum = 0
 // 第几集到第几集（包含）
-let [first, last] = [40, 41]
+let [first, last] = [35, 36]
 first = first || 0
 last = last || Number.MAX_SAFE_INTEGER
 
@@ -175,12 +175,11 @@ async function openbrowserhandler(downloadvideourls) {
  */
 async function download(video) {
 	return new Promise(async (resolve, reject) => {
-		console.log(video)
 		let referer = video.url
 		let downloadurl = video.downurl
 		let filename = `${video.num}${video.title}-${video.seqnum}.flv`
 		let savefile = path.join(savedir, filename)
-		console.log(savefile)
+		//console.log(savefile)
 		let isdown = await isDownloaded({
 			filename: savefile,
 			filesize: video.filesize
@@ -302,5 +301,10 @@ function metaDataHandler(savefilepath) {
 		.map(k => store[k])
 		.pop()
 	let urls = ss.filter((_, i) => i >= first && i <= last)
+	if(!urls || urls.length === 0) {
+		console.log('未有匹配的可下载资源')
+		return;
+	}
+	
 	await openbrowserhandler(urls)
 })()

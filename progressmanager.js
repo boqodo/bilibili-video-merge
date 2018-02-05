@@ -78,8 +78,8 @@ class Progress {
 		let progresstext = ''.padEnd(val, '=') + ''.padEnd(50 - val, '-')
 		let head = this.head.padEnd(headlen, ' ')
 		let elapsed = (new Date() - this.start) || 1
-		let rate = this.curr / (elapsed / 1000) / 1024
-		return `${head}:[${progresstext}] ${percent}%  ${Math.round(rate)}/kbps`
+		let rate = this.curr / (elapsed / 1000) / 1024 /1024
+		return `${head}:[${progresstext}] ${percent}%  ${Math.round(rate)}/mbps  ${elapsed/1000}s`
 	}
 }
 
