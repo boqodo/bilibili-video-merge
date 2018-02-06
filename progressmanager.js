@@ -28,10 +28,19 @@ class ProgressManager {
 	tick(p, len) {
 		let txts = []
 		this.queue.forEach(i => {
-			if (i === p) {
-				i.curr += len
+			let txt
+			if (i.curr === 0) {
+				txt = i.render(this.headlen)
+				if (i === p) {
+					i.curr += len
+				}
+			} else {
+				if (i === p) {
+					i.curr += len
+				}
+				txt = i.render(this.headlen)
 			}
-			txts.push(i.render(this.headlen))
+			txts.push(txt)
 		})
 
 		if (this.isFirst) {
@@ -47,11 +56,9 @@ class ProgressManager {
 		this.stream.write(txts.join('\n'))
 	}
 	finish(p) {
+		p.finish()
 		let isfinish = true
 		this.queue.forEach(i => {
-			if (i === p) {
-				i.isfinish = true
-			}
 			isfinish = isfinish && i.isfinish
 		})
 		if (isfinish) {
@@ -65,11 +72,15 @@ class Progress {
 		this.curr = options.curr
 		this.head = options.head
 	}
+	finish(){
+		this.isfinish = true
+		this.end = new Date()
+	}
 	render(headlen) {
-		if(this.curr === 0 ){
+		if (this.curr === 0) {
 			this.start = new Date()
 		}
-	
+
 		let ratio = this.curr / this.total
 		ratio = Math.min(Math.max(ratio, 0), 1)
 		let percent = ratio * 100
@@ -77,9 +88,13 @@ class Progress {
 		let val = parseInt(50 * ratio)
 		let progresstext = ''.padEnd(val, '=') + ''.padEnd(50 - val, '-')
 		let head = this.head.padEnd(headlen, ' ')
-		let elapsed = (new Date() - this.start) || 1
-		let rate = this.curr / (elapsed / 1000) / 1024 /1024
-		return `${head}:[${progresstext}] ${percent}%  ${Math.round(rate)}/mbps  ${elapsed/1000}s`
+		let elapsed = (this.isfinish ? this.end : new Date()) - this.start
+		let rate = this.curr / (elapsed / 1000) / 1024
+		rate = Math.round(rate)
+		let tail = `[${progresstext}] ${percent}%  ${rate}/kbps  ${elapsed / 1000}s`
+		this.prevtaillen = this.prevtaillen || tail.length
+		tail = this.prevtaillen > tail.length ? tail.padEnd(this.prevtaillen, ' ') : tail
+		return `${head}:${tail}`
 	}
 }
 

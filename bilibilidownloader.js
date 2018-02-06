@@ -180,11 +180,11 @@ async function download(video) {
 		let filename = `${video.num}${video.title}-${video.seqnum}.flv`
 		let savefile = path.join(savedir, filename)
 		//console.log(savefile)
-		let isdown = await isDownloaded({
+		let downstatus = await downloadedStatus({
 			filename: savefile,
 			filesize: video.filesize
 		})
-		if (!isdown) {
+		if (!downstatus) {
 			let headers = {
 				Host: downloadurl.host,
 				'User-Agent':
@@ -195,6 +195,7 @@ async function download(video) {
 				'Access-Control-Request-Headers': 'range',
 				'Access-Control-Request-Method': 'GET',
 				'Cache-Control': 'no-cache',
+				Range: `bytes=${downstatus.cursize}-`,
 				Connection: 'keep-alive',
 				Origin: 'https://www.bilibili.com',
 				Pragma: 'no-cache',
@@ -203,15 +204,18 @@ async function download(video) {
 			let res = await r2(downloadurl.href, { headers }).response
 
 			let bar = ProgressManager.createProgress({
-				total:video.filesize,
-				head:savefile
+				total: video.filesize - downstatus.cursize,
+				head: savefile
 			})
-			let write = fs.createWriteStream(savefile)
+			let write = fs.createWriteStream(savefile, {
+				flags: 'r+',
+				start: downstatus.cursize
+			})
 			res.body.on('error', data => {
 				reject(data)
 			})
 			res.body.on('data', function(chunk) {
-				ProgressManager.tick(bar,chunk.length)
+				ProgressManager.tick(bar, chunk.length)
 			})
 			res.body.on('end', () => {
 				ProgressManager.finish(bar)
@@ -223,7 +227,7 @@ async function download(video) {
 		}
 	})
 }
-async function isDownloaded(downitem) {
+async function downloadedStatus(downitem) {
 	let file = downitem.filename
 	let filesize = downitem.filesize
 	return new Promise((resolve, reject) => {
@@ -231,7 +235,11 @@ async function isDownloaded(downitem) {
 			if (err) {
 				err.code === 'ENOENT' ? resolve(false) : reject(err)
 			}
-			resolve(stats && stats.size === filesize)
+			if (!stats) {
+				resolve(false)
+			} else {
+				resolve({ isPart: stats.size !== filesize, cursize: stats.size })
+			}
 		})
 	})
 }
@@ -284,27 +292,30 @@ function metaDataHandler(savefilepath) {
 		})
 
 		ls.on('close', code => {
-			if(code === 0){
+			if (code === 0) {
 				fs.unlinkSync(savefilepath)
-				fs.renameSync(finalsavefilepath,savefilepath)
+				fs.renameSync(finalsavefilepath, savefilepath)
 				resolve(true)
-			}else{
+			} else {
 				reject(code)
 			}
 		})
 	})
 }
 ;(async () => {
-	let store = await getSeasonUrls(videourl)
-	let ss = Object.keys(store)
-		.filter((_, i) => i === seasonnum)
-		.map(k => store[k])
-		.pop()
-	let urls = ss.filter((_, i) => i >= first && i <= last)
-	if(!urls || urls.length === 0) {
-		console.log('未有匹配的可下载资源')
-		return;
+	try {
+		let store = await getSeasonUrls(videourl)
+		let ss = Object.keys(store)
+			.filter((_, i) => i === seasonnum)
+			.map(k => store[k])
+			.pop()
+		let urls = ss.filter((_, i) => i >= first && i <= last)
+		if (!urls || urls.length === 0) {
+			console.log('未有匹配的可下载资源')
+			return
+		}
+		await openbrowserhandler(urls)
+	} catch (e) {
+		console.error(e)
 	}
-	
-	await openbrowserhandler(urls)
 })()

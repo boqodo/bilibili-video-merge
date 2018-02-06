@@ -6,6 +6,7 @@
 
 - bilibilimerge.js  bilibili客户端下载到本地的flv文件合并，依赖[ffmpeg][ffmpeg]处理合并，[yamdi][yamdi]处理元信息
 - bilibilidownloader.js 基于puppeteer的抓取bilibili页面请求信息，下载文件并做合并（依赖[ffmpeg][ffmpeg]）处理，[yamdi][yamdi]处理元信息
+- cctvdownloader.js 下载cntv的mp4视频文件
 - progressmanager.js    下载进度显示处理
 - flvmeta.js        flv文件元信息提取
 - flvmeta.test.js   flv元信息测试文件
