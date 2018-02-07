@@ -12,9 +12,9 @@ const videourl =
 	'http://tv.cctv.com/2017/10/17/VIDEPwGJLUoyBE1Fl4kBJS1Q171017.shtml'
 const savedir = 'D:\\ztest-demo\\pp\\test\\'
 // 第几集到第几集（包含）
-let [first, last] = [47, 47]
-first = first || 0
-last = last || Number.MAX_SAFE_INTEGER
+let [first, last] = [45, 45]
+first = first === void 0 ? 0 : first
+last = last === void 0 ? Number.MAX_SAFE_INTEGER : last
 ;(async () => {
 	try {
 		let store = await getSeasonUrls(videourl)
@@ -144,7 +144,6 @@ async function download(video) {
 			res.body.pipe(write)
 		} else {
 			if (downstatus.isPart) {
-				console.log(video.filesize - downstatus.cursize)
 				let headers = {
 					'User-Agent':
 						'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0'
@@ -152,9 +151,12 @@ async function download(video) {
 				headers['Range'] = `bytes=${downstatus.cursize}-`
 				let res = await r2(downloadurl.href, { headers }).response
 
+				// res.ok res.status=206 表示部分传输
+
 				let bar = ProgressManager.createProgress({
-					total: video.filesize - downstatus.cursize,
-					head: savefile
+					total: video.filesize,
+					curr: downstatus.cursize,
+					head: '[续传]' + savefile
 				})
 				let write = fs.createWriteStream(savefile, {
 					flags: 'r+',
@@ -188,7 +190,10 @@ async function downloadedStatus(downitem) {
 			if (!stats) {
 				resolve(false)
 			} else {
-				resolve({ isPart: stats.size !== filesize, cursize: stats.size })
+				resolve({
+					isPart: Number(stats.size) !== Number(filesize),
+					cursize: stats.size
+				})
 			}
 		})
 	})

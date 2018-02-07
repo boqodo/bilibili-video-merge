@@ -9,8 +9,8 @@ const downloaddir = 'BilibiliDownload'
 const outvideodir = '保存文件目录'
 // 合并第几集到第几集
 let [first, last] = [0, 99]
-first = first || 0
-last = last || Number.MAX_SAFE_INTEGER
+first = first === void 0 ? 0 : first
+last = last === void 0 ? Number.MAX_SAFE_INTEGER : last
 async function start(dir) {
 	let files = await readdir(dir)
 	files.forEach(async f => {

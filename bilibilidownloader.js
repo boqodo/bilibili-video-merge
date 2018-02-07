@@ -17,11 +17,11 @@ const videourl = 'https://www.bilibili.com/bangumi/play/ep89267'
 // 下载动画存放目录
 const savedir = 'D:\\ztest-demo'
 // 第几季，从0开始
-let seasonnum = 0
+let seasonnum = 1
 // 第几集到第几集（包含）
-let [first, last] = [35, 36]
-first = first || 0
-last = last || Number.MAX_SAFE_INTEGER
+let [first, last] = [1, 1]
+first = first === void 0 ? 0 : first
+last = last === void 0 ? Number.MAX_SAFE_INTEGER : last
 
 /**
  * 根据任意一集动画的地址，提取对应动画各季下的动画地址
@@ -195,7 +195,6 @@ async function download(video) {
 				'Access-Control-Request-Headers': 'range',
 				'Access-Control-Request-Method': 'GET',
 				'Cache-Control': 'no-cache',
-				Range: `bytes=${downstatus.cursize}-`,
 				Connection: 'keep-alive',
 				Origin: 'https://www.bilibili.com',
 				Pragma: 'no-cache',
@@ -204,13 +203,10 @@ async function download(video) {
 			let res = await r2(downloadurl.href, { headers }).response
 
 			let bar = ProgressManager.createProgress({
-				total: video.filesize - downstatus.cursize,
+				total: video.filesize,
 				head: savefile
 			})
-			let write = fs.createWriteStream(savefile, {
-				flags: 'r+',
-				start: downstatus.cursize
-			})
+			let write = fs.createWriteStream(savefile)
 			res.body.on('error', data => {
 				reject(data)
 			})
@@ -223,7 +219,48 @@ async function download(video) {
 			})
 			res.body.pipe(write)
 		} else {
-			resolve(savefile)
+			if (downstatus.isPart) {
+				let headers = {
+					Host: downloadurl.host,
+					'User-Agent':
+						'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0',
+					Accept: '*/*',
+					'Accept-Language': 'zh-CN,zh;q=0.9',
+					'Accept-Encoding': 'gzip, deflate, br',
+					'Access-Control-Request-Headers': 'range',
+					'Access-Control-Request-Method': 'GET',
+					'Cache-Control': 'no-cache',
+					Range: `bytes=${downstatus.cursize}-`,
+					Connection: 'keep-alive',
+					Origin: 'https://www.bilibili.com',
+					Pragma: 'no-cache',
+					Referer: referer
+				}
+				let res = await r2(downloadurl.href, { headers }).response
+
+				let bar = ProgressManager.createProgress({
+					total: video.filesize,
+					curr: downstatus.cursize,
+					head: '[续传]' + savefile
+				})
+				let write = fs.createWriteStream(savefile, {
+					flags: 'r+',
+					start: downstatus.cursize
+				})
+				res.body.on('error', data => {
+					reject(data)
+				})
+				res.body.on('data', function(chunk) {
+					ProgressManager.tick(bar, chunk.length)
+				})
+				res.body.on('end', () => {
+					ProgressManager.finish(bar)
+					resolve(savefile)
+				})
+				res.body.pipe(write)
+			} else {
+				resolve(savefile)
+			}
 		}
 	})
 }
@@ -238,7 +275,10 @@ async function downloadedStatus(downitem) {
 			if (!stats) {
 				resolve(false)
 			} else {
-				resolve({ isPart: stats.size !== filesize, cursize: stats.size })
+				resolve({
+					isPart: Number(stats.size) !== Number(filesize),
+					cursize: stats.size
+				})
 			}
 		})
 	})

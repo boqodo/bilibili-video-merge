@@ -72,14 +72,12 @@ class Progress {
 		this.curr = options.curr
 		this.head = options.head
 	}
-	finish(){
+	finish() {
 		this.isfinish = true
 		this.end = new Date()
 	}
 	render(headlen) {
-		if (this.curr === 0) {
-			this.start = new Date()
-		}
+		this.start = this.start || new Date()
 
 		let ratio = this.curr / this.total
 		ratio = Math.min(Math.max(ratio, 0), 1)
@@ -93,7 +91,8 @@ class Progress {
 		rate = Math.round(rate)
 		let tail = `[${progresstext}] ${percent}%  ${rate}/kbps  ${elapsed / 1000}s`
 		this.prevtaillen = this.prevtaillen || tail.length
-		tail = this.prevtaillen > tail.length ? tail.padEnd(this.prevtaillen, ' ') : tail
+		tail =
+			this.prevtaillen > tail.length ? tail.padEnd(this.prevtaillen, ' ') : tail
 		return `${head}:${tail}`
 	}
 }
